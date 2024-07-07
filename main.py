@@ -1,31 +1,61 @@
-from flask import Flask, render_template, request, send_from_directory, redirect
+from flask import Flask, render_template, request, send_from_directory, redirect, json
 from dotenv import load_dotenv
 import os
 import json
 from os.path import join, dirname
+import sqlite3
+
+import random_url
 
 load_dotenv()
 
 domain = os.environ.get("DOMAIN")
+sample_size = int(os.environ.get("SAMPLE_SIZE"))
+
+def connect_to_db():
+    conn = sqlite3.connect('urls.db')
+    c = conn.cursor()
+    return c, conn
 
 def random_url_id():
-    #TO DO random character generator
-    pass
-    return url
+    url_id = random_url.generate_random_string(sample_size)
+    if check_url(url_id):
+        url_id = random_url_id()
+    return url_id
 
 def check_url(url_id):
-    # TO DO look into database and check for url. 
-    return "test"
+    c, conn = connect_to_db()
+    c.execute("SELECT EXISTS(SELECT 1 FROM urls WHERE url_id=? LIMIT 1)", (url_id,))
+    record = c.fetchone()
+    if record[0] == 1:
+        return True
+    else:
+        return False
 
 def get_url(url_id):
-    # TO DO  look into database and get url + increase visit count ++
-    url = "https://nolog.cz"
+    c, conn = connect_to_db()
+    c.execute("SELECT * FROM urls WHERE url_id=? LIMIT 1", (url_id,))
+    record = c.fetchone()
+    url = record[1]
+    visit_counter = record[2]
+    visit_counter = visit_counter + 1
+    print(visit_counter)
+    c.execute("UPDATE urls SET visit_counter = ? WHERE url_id = ?", (visit_counter, url_id))
+    conn.commit()
     return url
 
 def create_url(url, url_id = None):
-    # TO DO call random_url_id if none url_id specified and add thing to database
-    pass
-    return "AsWgAZTO"
+    if url_id == "":
+        url_id = random_url_id()
+        pass
+    if check_url(url_id):
+        url_id = random_url_id()
+    item = [url_id,url,0]
+    print(item)
+    c, conn = connect_to_db()
+    c.execute('insert into urls values (?,?,?)', item)
+    conn.commit()
+    return url_id
 
 app = Flask(__name__, template_folder='./conf/templates')
 
@@ -47,13 +77,17 @@ def home():
 @app.route("/create", methods=['POST'])
 def create_route():
     if request.method == 'POST':
-        url = request.form.get("url")
-        url_id = request.form.get("url_id")
+        content_type = request.headers.get('Content-Type')
+        data = ""
+        if (content_type == 'application/x-www-form-urlencoded'):
+            data = request.form
+        elif (content_type == 'application/json'):
+            data = request.json
+        else:
+            data = json.loads(request.data)
+        url = data["url"]
+        url_id = data["url_id"]
         print(url, url_id)
         url_id = create_url(url, url_id)
-        return f"{domain}/{url_id}"
+        return f"{domain}/u/{url_id}"
 
-@app.route("/curl/<url>")
-def curl_create_route(url):
-    url_id = create_url(url)
-    return f"{domain}/{url_id}"
