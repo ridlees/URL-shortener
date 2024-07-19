@@ -4,43 +4,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-<style>
- label, p {
-    font-family: monospace;
-    letter-spacing: .17em;
-    overflow:hidden;
-
-.center{
-    display: flex;
-    justify-content: center;
-}
-.input{
-  border-radius: 25px;
-  border: 2px solid gray;
-  padding: 10px;
-  margin: 10px
-}
-#button:hover {background-color: #888B8D}
-#button:active {
-  background-color: #666;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
-}
-</style>
 
 </head>
 <body>
-<div class="center">
-<h1> URL Shortener</h1></div>
-</div>
-<label for="url">URL:</label>
-<input type="url" id="url" name="url">
-<label for="url_id">Alias:</label>
-<input type="text" id="url_id" name="url_id">
-<button hx-post="/create" hx-trigger="click" hx-indicator="#loading"
-hx-swap="outerHTML"  hx-include="[name='url'], [name='url_id']">
+<div class="flex-col grid-cols-1 flex items-center justify-center p-6 gap-8" >
+<h1 class="text-3xl font-bold underline"> URL:Shortener</h1>
+<input class= "shadow rounded" type="url" id="url" name="url" placeholder="URL">
+<input class= "shadow rounded" type="text" id="url_id" name="url_id" placeholder="ALIAS">
+<input class= "shadow rounded" type="email" id="email" name="email" placeholder="EMAIL">
+<button class= "h-10 px-6 font-semibold rounded-md bg-black text-white" hx-post="/create" hx-trigger="click" hx-indicator="#loading"
+hx-swap="outerHTML"  hx-include="[name='url'], [name='url_id'], [name='email']">
 Shorten
 </button>
+</div>
 </body>
 </html>
