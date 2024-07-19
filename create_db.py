@@ -2,7 +2,7 @@ import sqlite3
 
 
 def create_tables(database):
-    sql_statement = "CREATE TABLE IF NOT EXISTS urls (url_id TEXT PRIMARY KEY, url text TEXT NOT NULL, visit_counter INT)"
+    sql_statement = "CREATE TABLE IF NOT EXISTS urls (url_id TEXT PRIMARY KEY, url text TEXT NOT NULL, visit_counter INT, email TEXT)"
     try:
         with sqlite3.connect(database) as conn:
             cursor = conn.cursor()

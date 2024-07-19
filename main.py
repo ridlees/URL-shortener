@@ -44,16 +44,16 @@ def get_url(url_id):
     conn.commit()
     return url
 
-def create_url(url, url_id = None):
+def create_url(url, email, url_id = None):
     if url_id == "":
         url_id = random_url_id()
         pass
     if check_url(url_id):
         url_id = random_url_id()
-    item = [url_id,url,0]
+    item = [url_id,url,0, email]
     print(item)
     c, conn = connect_to_db()
-    c.execute('insert into urls values (?,?,?)', item)
+    c.execute('insert into urls values (?,?,?,?)', item)
     conn.commit()
     return url_id
 
@@ -87,7 +87,8 @@ def create_route():
             data = json.loads(request.data)
         url = data["url"]
         url_id = data["url_id"]
-        print(url, url_id)
-        url_id = create_url(url, url_id)
-        return f"{domain}/u/{url_id}"
+        email = data["email"]
+        print(url, url_id, email)
+        url_id = create_url(url,email, url_id )
+        return f'<span hx-on:click="!window.s?s=this.textContent:null;navigator.clipboard.writeText(s);this.textContent=\'Copied\';setTimeout(()=>{{this.textContent=s}}, 1000)">{domain}/u/{url_id}</span>'
 
