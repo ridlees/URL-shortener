@@ -4,6 +4,8 @@ import os
 import json
 from os.path import join, dirname
 import sqlite3
+from urllib.parse import urlparse
+
 
 import random_url
 
@@ -11,6 +13,13 @@ load_dotenv()
 
 domain = os.environ.get("DOMAIN")
 sample_size = int(os.environ.get("SAMPLE_SIZE"))
+
+def validate_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except AttributeError:
+        return False
 
 def connect_to_db():
     conn = sqlite3.connect('urls.db')
@@ -86,6 +95,7 @@ def create_route():
         else:
             data = json.loads(request.data)
         url = data["url"]
+        print(validate_url(url))
         url_id = data["url_id"]
         email = data["email"]
         print(url, url_id, email)
