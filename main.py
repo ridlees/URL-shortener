@@ -5,6 +5,7 @@ import json
 from os.path import join, dirname
 import sqlite3
 from urllib.parse import urlparse
+import re
 
 
 import random_url
@@ -13,6 +14,9 @@ load_dotenv()
 
 domain = os.environ.get("DOMAIN")
 sample_size = int(os.environ.get("SAMPLE_SIZE"))
+
+def validate_alias(alias):
+    return re.sub('[^A-Za-z0-9\-]+','', alias)
 
 def validate_url(url):
     try:
@@ -95,10 +99,11 @@ def create_route():
         else:
             data = json.loads(request.data)
         url = data["url"]
-        print(validate_url(url))
+        if not validate_url(url):
+            return "Use real URL in format Http://example.com"
         url_id = data["url_id"]
+        url_id = validate_alias(url_id)
         email = data["email"]
         print(url, url_id, email)
         url_id = create_url(url,email, url_id )
         return f'<span hx-on:click="!window.s?s=this.textContent:null;navigator.clipboard.writeText(s);this.textContent=\'Copied\';setTimeout(()=>{{this.textContent=s}}, 1000)">{domain}/u/{url_id}</span>'
-
