@@ -64,7 +64,6 @@ def create_url(url, email, url_id = None):
     if check_url(url_id):
         url_id = random_url_id()
     item = [url_id,url,0, email]
-    print(item)
     c, conn = connect_to_db()
     c.execute('insert into urls values (?,?,?,?)', item)
     conn.commit()
@@ -92,18 +91,23 @@ def create_route():
     if request.method == 'POST':
         content_type = request.headers.get('Content-Type')
         data = ""
+        state = 0
         if (content_type == 'application/x-www-form-urlencoded'):
             data = request.form
         elif (content_type == 'application/json'):
             data = request.json
+            state = 1
         else:
             data = json.loads(request.data)
+            state = 1
         url = data["url"]
         if not validate_url(url):
             return '<a href="javascript:window.location.href=window.location.href">Use real URL in format Http://example.com<a>'
         url_id = data["url_id"]
         url_id = validate_alias(url_id)
         email = data["email"]
-        print(url, url_id, email)
-        url_id = create_url(url,email, url_id )
-        return f'<span hx-on:click="!window.s?s=this.textContent:null;navigator.clipboard.writeText(s);this.textContent=\'Copied\';setTimeout(()=>{{this.textContent=s}}, 1000)">{domain}/u/{url_id}</span>'
+        url_id = create_url(url,email, url_id)
+        if state == 0:
+            return f'<span hx-on:click="!window.s?s=this.textContent:null;navigator.clipboard.writeText(s);this.textContent=\'Copied\';setTimeout(()=>{{this.textContent=s}}, 1000)">{domain}/u/{url_id}</span>'
+        else:
+            return f"{domain}/u/{url_id}"
