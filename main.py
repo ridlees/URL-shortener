@@ -102,7 +102,7 @@ def create_route():
             state = 1
         url = data["url"]
         if not validate_url(url):
-            return '<a href="javascript:window.location.href=window.location.href">Use real URL in format Http://example.com<a>'
+            return '<a href="javascript:window.location.href=window.location.href">Use real URL in format http://example.com<a>'
         url_id = data["url_id"]
         url_id = validate_alias(url_id)
         email = data["email"]

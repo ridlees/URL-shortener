@@ -13,11 +13,14 @@
 <h1 class="text-3xl font-bold underline"> URL:Shortener</h1>
 <input class= "shadow rounded" type="url" id="url" name="url" placeholder="URL">
 <input class= "shadow rounded" type="text" id="url_id" name="url_id" placeholder="ALIAS">
-<input class= "shadow rounded" type="email" id="email" name="email" placeholder="EMAIL">
+<input class= "shadow rounded" type="email" id="email" name="email" placeholder="(OPTIONAL) EMAIL">
 <button class= "h-10 px-6 font-semibold rounded-md bg-black text-white" hx-post="/create" hx-trigger="click" hx-indicator="#loading"
-hx-swap="outerHTML"  hx-include="[name='url'], [name='url_id'], [name='email']">
+hx-swap="innerHTML"  hx-include="[name='url'], [name='url_id'], [name='email']" hx-target="#target">
 Shorten
 </button>
+<div class="h-10 px-6 font-semibold rounded-md" id="target">
+Your URL
+</div>
 </div>
 </body>
 </html>
