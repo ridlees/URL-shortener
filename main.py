@@ -75,7 +75,6 @@ app = Flask(__name__, template_folder='./conf/templates')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'conf/static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
 @app.route("/u/<url_id>")
 def redirecter(url_id):
     url = get_url(url_id)
@@ -85,7 +84,6 @@ def redirecter(url_id):
 def home():
     return render_template('index.html')
     
-
 @app.route("/create", methods=['POST'])
 def create_route():
     if request.method == 'POST':
@@ -102,7 +100,10 @@ def create_route():
             state = 1
         url = data["url"]
         if not validate_url(url):
-            return '<a href="javascript:window.location.href=window.location.href">Use real URL in format http://example.com<a>'
+            if state == 0:
+                return '<a href="javascript:window.location.href=window.location.href">Use real URL in format http://example.com<a>'
+            else:
+                return "Use real URL in format http://example.com"
         url_id = data["url_id"]
         url_id = validate_alias(url_id)
         email = data["email"]
